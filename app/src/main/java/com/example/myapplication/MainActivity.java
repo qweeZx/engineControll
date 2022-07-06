@@ -1,12 +1,17 @@
 package com.example.myapplication;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
+
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.XAxis;
@@ -39,20 +44,22 @@ public class MainActivity extends AppCompatActivity {
     LineChart currentChart;
 
     ProgressBar motorProgressBar;
+    TextView currentInd;
+    TextView voltageInd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        getSupportActionBar().setLogo(getDrawable(R.drawable.irgups_logo));
-
 
         motorProgressBar = findViewById(R.id.motorProgressBar);
         voltageChart = findViewById(R.id.voltageChart);
         currentChart = findViewById(R.id.currentChart);
+        currentInd = findViewById(R.id.currentIndicator);
+        voltageInd = findViewById(R.id.voltageIndicator);
 
         currentChart.setAutoScaleMinMaxEnabled(false);
-        currentChart.getAxisLeft().setAxisMaximum(12);
+        currentChart.getAxisLeft().setAxisMaximum(30);
         currentChart.getAxisLeft().setAxisMinimum(0);
         currentChart.getAxisRight().setEnabled(false);
         currentChart.setDescription(null);
@@ -69,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
         for(int i = 0; i <= 20; i++){
             voltageEntries.add(new Entry(i,0f));
         }
-        voltageDataSet = new LineDataSet(voltageEntries,"voltage");
+        voltageDataSet = new LineDataSet(voltageEntries,null);
         voltageData = new LineData(voltageDataSet);
         voltageChart.getXAxis().setValueFormatter(new HourAxisValueFormatter());
         voltageData.setDrawValues(false);
@@ -80,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
         for(int i = 0; i <= 20; i++){
             currentEntries.add(new Entry(i,0f));
         }
-        currentDataSet = new LineDataSet(currentEntries,"current");
+        currentDataSet = new LineDataSet(currentEntries,null);
         currentData = new LineData(currentDataSet);
         currentChart.getXAxis().setValueFormatter(new HourAxisValueFormatter());
         currentData.setDrawValues(false);
@@ -138,11 +145,24 @@ public class MainActivity extends AppCompatActivity {
 
     public boolean onCreateOptionsMenu(Menu menu){
         getMenuInflater().inflate(R.menu.main, menu);
+
         return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.info:
+                FragmentManager manager = getSupportFragmentManager();
+                InfoDialog infoDialog = new InfoDialog();
+                infoDialog.show(manager, "Info");
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     public void changeVoltageChart(float voltage){
         runOnUiThread(() -> {
+            voltageInd.setText(String.format("Напряжение: %.2f В", voltage));
             voltageDataSet.removeFirst();
             voltageDataSet.addEntry(new Entry(voltageEntries.get(voltageEntries.size() - 1).getX() + 1, voltage));
             voltageData.notifyDataChanged();
@@ -153,6 +173,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void changeCurrentChart(float current){
         runOnUiThread(() -> {
+            currentInd.setText(String.format("Ток: %.2f мА", current));
             currentDataSet.removeFirst();
             currentDataSet.addEntry(new Entry(currentEntries.get(currentEntries.size() - 1).getX() + 1, current));
             currentData.notifyDataChanged();
