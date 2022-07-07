@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -91,6 +92,8 @@ public class MainActivity extends AppCompatActivity {
         voltageData.setDrawValues(false);
         voltageChart.setData(voltageData);
         voltageDataSet.setHighlightEnabled(false);
+        voltageDataSet.setColor(Color.parseColor("#0C3CF4"));
+        voltageDataSet.setCircleColor(Color.parseColor("#0C3CF4"));
         voltageChart.invalidate();
 
         currentEntries = new ArrayList<>();
@@ -103,6 +106,8 @@ public class MainActivity extends AppCompatActivity {
         currentData.setDrawValues(false);
         currentChart.setData(currentData);
         currentDataSet.setHighlightEnabled(false);
+        currentDataSet.setColor(Color.parseColor("#E91E63"));
+        currentDataSet.setCircleColor(Color.parseColor("#E91E63"));
         currentChart.invalidate();
 
         Button button1 = findViewById(R.id.button1);
