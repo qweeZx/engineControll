@@ -46,30 +46,39 @@ public class MainActivity extends AppCompatActivity {
     ProgressBar motorProgressBar;
     TextView currentInd;
     TextView voltageInd;
+    TextView lvlInd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        getSupportActionBar().hide();
+
         motorProgressBar = findViewById(R.id.motorProgressBar);
         voltageChart = findViewById(R.id.voltageChart);
         currentChart = findViewById(R.id.currentChart);
         currentInd = findViewById(R.id.currentIndicator);
         voltageInd = findViewById(R.id.voltageIndicator);
+        lvlInd = findViewById(R.id.lvlInd);
 
         currentChart.setAutoScaleMinMaxEnabled(false);
         currentChart.getAxisLeft().setAxisMaximum(30);
         currentChart.getAxisLeft().setAxisMinimum(0);
         currentChart.getAxisRight().setEnabled(false);
         currentChart.setDescription(null);
+        currentChart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
+        currentChart.getLegend().setEnabled(false);
+        currentChart.setScaleEnabled(false);
 
         voltageChart.setAutoScaleMinMaxEnabled(false);
         voltageChart.getAxisLeft().setAxisMaximum(12);
         voltageChart.getAxisLeft().setAxisMinimum(0);
         voltageChart.getAxisRight().setEnabled(false);
         voltageChart.setDescription(null);
-
+        voltageChart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
+        voltageChart.getLegend().setEnabled(false);
+        voltageChart.setScaleEnabled(false);
 
 
         voltageEntries = new ArrayList<>();
@@ -81,6 +90,7 @@ public class MainActivity extends AppCompatActivity {
         voltageChart.getXAxis().setValueFormatter(new HourAxisValueFormatter());
         voltageData.setDrawValues(false);
         voltageChart.setData(voltageData);
+        voltageDataSet.setHighlightEnabled(false);
         voltageChart.invalidate();
 
         currentEntries = new ArrayList<>();
@@ -92,6 +102,7 @@ public class MainActivity extends AppCompatActivity {
         currentChart.getXAxis().setValueFormatter(new HourAxisValueFormatter());
         currentData.setDrawValues(false);
         currentChart.setData(currentData);
+        currentDataSet.setHighlightEnabled(false);
         currentChart.invalidate();
 
         Button button1 = findViewById(R.id.button1);
@@ -143,23 +154,6 @@ public class MainActivity extends AppCompatActivity {
         thread.start();
     }
 
-    public boolean onCreateOptionsMenu(Menu menu){
-        getMenuInflater().inflate(R.menu.main, menu);
-
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()){
-            case R.id.info:
-                FragmentManager manager = getSupportFragmentManager();
-                InfoDialog infoDialog = new InfoDialog();
-                infoDialog.show(manager, "Info");
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
     public void changeVoltageChart(float voltage){
         runOnUiThread(() -> {
             voltageInd.setText(String.format("Напряжение: %.2f В", voltage));
@@ -184,6 +178,7 @@ public class MainActivity extends AppCompatActivity {
 
     public  void changeMotorProgressBar(int motor){
         runOnUiThread(() -> {
+            lvlInd.setText(String.format("%d%%", (motor-200)/8));
             motorProgressBar.setProgress(motor - 200);
         });
     }
