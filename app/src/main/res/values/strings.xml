@@ -3,7 +3,5 @@
     <string name="level_voltage">Уровень питающего напряжения</string>
     <string name="minus">Уменьшить</string>
     <string name="plus">Увеличить</string>
-    <string name="info">INFO</string>
-    <string name="todo">TODO</string>
 
 </resources>
