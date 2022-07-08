@@ -34,6 +34,7 @@ import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity {
 
+    //Объявление элементов GUI
     ArrayList<Entry> voltageEntries = new ArrayList<>();
     LineDataSet voltageDataSet;
     LineData voltageData;
@@ -52,10 +53,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //настройка Actvity
         setContentView(R.layout.activity_main);
-
         getSupportActionBar().hide();
 
+        //Инициализация графических элеметов
         motorProgressBar = findViewById(R.id.motorProgressBar);
         voltageChart = findViewById(R.id.voltageChart);
         currentChart = findViewById(R.id.currentChart);
@@ -63,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
         voltageInd = findViewById(R.id.voltageIndicator);
         lvlInd = findViewById(R.id.lvlInd);
 
+        //Настройка графиков
         currentChart.setAutoScaleMinMaxEnabled(false);
         currentChart.getAxisLeft().setAxisMaximum(30);
         currentChart.getAxisLeft().setAxisMinimum(0);
@@ -81,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
         voltageChart.getLegend().setEnabled(false);
         voltageChart.setScaleEnabled(false);
 
-
+        //Инициализация графиков
         voltageEntries = new ArrayList<>();
         for(int i = 0; i <= 20; i++){
             voltageEntries.add(new Entry(i,0f));
@@ -110,6 +113,7 @@ public class MainActivity extends AppCompatActivity {
         currentDataSet.setCircleColor(Color.parseColor("#E91E63"));
         currentChart.invalidate();
 
+        //Обработка нажатий кнопок
         Button button1 = findViewById(R.id.button1);
         button1.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -159,6 +163,10 @@ public class MainActivity extends AppCompatActivity {
         thread.start();
     }
 
+    /**
+     * Метод добавляет в график новое значение слева и убирает значение справа, работает по принципу FIFO
+     * @param voltage значение Y
+     */
     public void changeVoltageChart(float voltage){
         runOnUiThread(() -> {
             voltageInd.setText(String.format("Напряжение: %.2f В", voltage));
@@ -170,6 +178,10 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Метод добавляет в график новое значение слева и убирает значение справа, работает по принципу FIFO
+     * @param current значение Y
+     */
     public void changeCurrentChart(float current){
         runOnUiThread(() -> {
             currentInd.setText(String.format("Ток: %.2f мА", current));
@@ -181,6 +193,10 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Изменяет значение мощности
+     * @param motor
+     */
     public  void changeMotorProgressBar(int motor){
         runOnUiThread(() -> {
             lvlInd.setText(String.format("%d%%", (motor-200)/8));
@@ -189,6 +205,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
 }
+
+/**
+ * Поток отвечающий за получение данных с сервера и отправку их в GUI
+ */
 class MyThread extends Thread{
     MainActivity activity;
     public MyThread(MainActivity activity){
@@ -197,12 +217,14 @@ class MyThread extends Thread{
 
     @Override
     public void run() {
+        //Установление соединения
         OkHttpClient client = new OkHttpClient();
         String ans = null;
         Request request = new Request.Builder()
                 .url("http://cifra.h1n.ru/json_read.php")
                 .build();
         while(true){
+            //Парсинг json-ответа
             try (Response response = client.newCall(request).execute()){
                 ans = response.body().string();
                 JSONObject obj = new JSONObject(ans);

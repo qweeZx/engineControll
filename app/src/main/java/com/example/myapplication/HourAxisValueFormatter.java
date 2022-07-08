@@ -12,15 +12,14 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
+/**
+ * Класс для преобразования XAxis в время
+ */
 public class HourAxisValueFormatter extends ValueFormatter {
-//    long zeroTime;
 
     @Override
     public String getAxisLabel(float value, AxisBase axis) {
-//        Date time = Calendar.getInstance().getTime();
-//        LocalTime =
-        String currentTime = new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(new Date());
-        return currentTime;
+        return new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(new Date());
 
     }
 }
